@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        // Frontend configuration
+        APP_DIR = 'frontend'
+        BACKEND_URL = 'http://localhost:9000'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Pull source code from GitHub
+                checkout scm
+            }
+        }
+
+        stage('Install Node Dependencies') {
+            steps {
+                sh '''
+                    # Move to frontend folder and install npm packages
+                    cd ${APP_DIR}
+                    npm install
+                '''
+            }
+        }
+
+        stage('Deploy Frontend (PM2)') {
+            steps {
+                sh '''
+                    # Stop and remove existing Express process if running
+                    pm2 stop express-frontend || true
+                    pm2 delete express-frontend || true
+
+                    # Launch Express server on port 8000 using PM2
+                    cd ${APP_DIR}
+                    BACKEND_URL="${BACKEND_URL}" pm2 start server.js --name "express-frontend"
+                    pm2 save
+                '''
+            }
+        }
+
+        stage('Verify Health') {
+            steps {
+                sh '''
+                    # Wait for frontend initialization
+                    sleep 3
+
+                    # Validate frontend endpoint on port 8000
+                    curl -f http://localhost:8000/health || exit 1
+                '''
+            }
+        }
+    }
+}
