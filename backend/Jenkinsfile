@@ -2,14 +2,12 @@ pipeline {
     agent any
 
     environment {
-        // Backend folder name
         APP_DIR = 'backend'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Pull source code from GitHub
                 checkout scm
             }
         }
@@ -17,15 +15,10 @@ pipeline {
         stage('Install Python Dependencies') {
             steps {
                 sh '''
-                    # Move to backend folder
                     cd ${APP_DIR}
-
-                    # Create virtual environment if missing
                     if [ ! -d "venv" ]; then
                         python3 -m venv venv
                     fi
-
-                    # Activate virtual environment and install requirements
                     . venv/bin/activate
                     pip install --upgrade pip
                     pip install -r requirements.txt
@@ -36,12 +29,11 @@ pipeline {
         stage('Deploy Backend (PM2)') {
             steps {
                 sh '''
-                    # Stop and remove existing Flask process if running
                     pm2 stop flask-backend || true
                     pm2 delete flask-backend || true
 
-                    # Launch Flask API on port 9000 using PM2
-                    pm2 start ${APP_DIR}/venv/bin/python --name "flask-backend" -- ${APP_DIR}/app.py
+                    cd ${APP_DIR}
+                    pm2 start venv/bin/python --name "flask-backend" -- app.py
                     pm2 save
                 '''
             }
@@ -50,10 +42,9 @@ pipeline {
         stage('Verify Health') {
             steps {
                 sh '''
-                    # Wait for backend initialization
-                    sleep 3
-
-                    # Validate local endpoint on port 9000
+                    sleep 5
+                    pm2 status
+                    pm2 logs flask-backend --lines 15 --nostream
                     curl -f http://localhost:9000/health || exit 1
                 '''
             }
