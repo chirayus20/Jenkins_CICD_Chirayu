@@ -78,9 +78,10 @@ resource "aws_instance" "app_server" {
     #!/bin/bash
     apt-get update -y
     apt-get install -y git python3-pip nodejs npm
+    npm install -g pm2
 
     cd /home/ubuntu
-    git clone https://github.com/chirayus20/Terraform_Chirayu.git app
+    git clone https://github.com/chirayus20/Jenkins_CICD_Chirayu.git app
 
     # Dynamically inject credentials into backend .env
     cat << 'ENVFILE' > /home/ubuntu/app/backend/.env
@@ -93,15 +94,19 @@ ENVFILE
     chown -R ubuntu:ubuntu /home/ubuntu/app
     chmod 600 /home/ubuntu/app/backend/.env
 
-    # Setup Flask backend
+    # Configure and start Flask backend with PM2
     cd /home/ubuntu/app/backend
     pip3 install -r requirements.txt
-    sudo -u ubuntu nohup python3 app.py > backend.log 2>&1 &
+    sudo -u ubuntu pm2 start app.py --name "flask-backend" --interpreter python3
 
-    # Setup Express frontend
+    # Configure and start Express frontend with PM2
     cd /home/ubuntu/app/frontend
     npm install
-    sudo -u ubuntu nohup npm start > frontend.log 2>&1 &
+    sudo -u ubuntu pm2 start server.js --name "express-frontend"
+
+    # Save PM2 process list and configure startup persistence
+    sudo -u ubuntu pm2 save
+    env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
   EOF
 
   tags = {
