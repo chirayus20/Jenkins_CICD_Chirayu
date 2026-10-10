@@ -332,12 +332,14 @@ The project is ready for final submission. All supporting screenshots and eviden
 
 ---
 
+---
+
 ## Mentor Feedback Resolution Summary
 
 All feedback points provided by the mentor have been fully resolved:
 
-- **Fix: Jenkinsfile Evidence** — Documented end-to-end declarative pipeline stages, environment handling, dependency installations, and automated health checks for both `flask-backend-pipeline` and `express-frontend-pipeline`[cite: 7, 8].
-- **Fix: Pipeline Execution Proof** — Added verified screenshots of Jenkins Stage View and execution logs demonstrating clean, successful builds (`SUCCESS`)[cite: 7, 8].
-- **Fix: GitHub Webhook Integration** — Verified automated pipeline triggering with evidence from GitHub Recent Deliveries showing active push events and `200 OK` responses[cite: 4].
-- **Fix: Terraform PM2 Configuration** — Refactored `terraform/part1-single-ec2/main.tf` by replacing legacy `nohup` commands with PM2 process manager setup in the EC2 `user_data` script, and updated the repository clone URL to `Jenkins_CICD_Chirayu.git`[cite: 2].
-- **Fix: Live Process Monitoring** — Verified persistent background execution on the EC2 host via `pm2 status`, confirming both backend and frontend applications are running in an `online` state[cite: 12].
+- **Fix: Jenkinsfile Evidence** — Documented end-to-end declarative pipeline stages, environment handling, dependency installations, and automated health checks for both `flask-backend-pipeline` and `express-frontend-pipeline`.
+- **Fix: Pipeline Execution Proof** — Added verified screenshots of Jenkins Stage View and execution logs demonstrating clean, successful builds (`SUCCESS`).
+- **Fix: GitHub Webhook Integration** — Verified automated pipeline triggering with evidence from GitHub Recent Deliveries showing active push events and `200 OK` responses.
+- **Fix: Terraform PM2 Configuration** — Refactored `terraform/part1-single-ec2/main.tf` by replacing legacy `nohup` commands with PM2 process manager setup in the EC2 `user_data` script, and updated the repository clone URL to `Jenkins_CICD_Chirayu.git`.
+- **Fix: Live Process Monitoring** — Verified persistent background execution on the EC2 host via `pm2 status`, confirming both backend and frontend applications are running in an `online` state.
